@@ -21,6 +21,7 @@ export const Container = styled.div<ContainerProps>`
         color: #fff;
         text-decoration: none;
         font-size: 16px;
+        padding: 10px;
         transition: opacity 0.2s;
 
         & + a {
@@ -31,6 +32,11 @@ export const Container = styled.div<ContainerProps>`
           opacity: 0.6;
         }
       }
+      .tabActive {
+        border-bottom: solid #ff872c;
+      }
     }
   }
 `;
+
+// ${({ page }) => (page === 'dashboard' ? 'solid' : '')}
