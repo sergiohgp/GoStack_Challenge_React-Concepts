@@ -93,7 +93,7 @@ const Dashboard: React.FC = () => {
             <thead>
               <tr>
                 <th>Title</th>
-                <th>Price CAD$</th>
+                <th>Value</th>
                 <th>Category</th>
                 <th>Date</th>
               </tr>
