@@ -1,7 +1,12 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { shade } from 'polished';
 
 interface CardProps {
   total?: boolean;
+}
+
+interface FormProps {
+  hasError: boolean;
 }
 
 export const Container = styled.div`
@@ -48,7 +53,7 @@ export const Card = styled.div`
 `;
 
 export const TableContainer = styled.section`
-  margin-top: 64px;
+  margin-top: 40px;
 
   table {
     width: 100%;
@@ -82,6 +87,18 @@ export const TableContainer = styled.section`
       &.outcome {
         color: #e83f5b;
       }
+
+      button {
+        /* position: absolute; */
+        right: 24px;
+        top: 24px;
+        border: 0;
+        transition: filter 0.2s;
+
+        &:hover {
+          opacity: 0.6;
+        }
+      }
     }
 
     td:first-child {
@@ -92,4 +109,56 @@ export const TableContainer = styled.section`
       border-radius: 0 8px 8px 0;
     }
   }
+`;
+
+export const Form = styled.form<FormProps>`
+  margin-top: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+
+  input {
+    flex: 1;
+    height: 70px;
+    padding: 0 18px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    color: #3a3a3a;
+
+    ${props =>
+    props.hasError &&
+    css`
+        border-color: #c53030;
+      `}
+
+    & + input {
+      margin-left: 20px;
+    }
+
+    &::placeholder {
+      color: #a8a8b3;
+    }
+  }
+
+  button {
+    width: 210px;
+    height: 70px;
+    margin-left: 20px;
+    background: #5636d3;
+    border-radius: 5px;
+    border: 0;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: ${shade(0.2, '#5636d3')};
+    }
+  }
+`;
+
+export const Error = styled.span`
+  display: block;
+  color: #c53030;
+  margin-top: 8px;
 `;

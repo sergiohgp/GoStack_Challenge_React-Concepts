@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ size = 'large' }: HeaderProps) => {
             }
             to="/dashboard"
           >
-            Listagem
+            Transaction List
           </Link>
           <Link
             className={
@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ size = 'large' }: HeaderProps) => {
             }
             to="/import"
           >
-            Importar
+            Import File
           </Link>
         </nav>
       </header>

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
+import { useHistory } from 'react-router-dom';
+import { FiTrash2 } from 'react-icons/fi';
 
 import income from '../../assets/income.svg';
 import outcome from '../../assets/outcome.svg';
@@ -11,7 +13,14 @@ import Header from '../../components/Header';
 import formatValue from '../../utils/formatValue';
 // import formatDate from '../../utils/formatDate';
 
-import { Container, CardContainer, Card, TableContainer } from './styles';
+import {
+  Container,
+  CardContainer,
+  Card,
+  TableContainer,
+  Form,
+  Error,
+} from './styles';
 
 interface Transaction {
   id: string;
@@ -33,6 +42,13 @@ interface Balance {
 const Dashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<Balance>({} as Balance);
+  const [inputError, setInputError] = useState('');
+  const [title, setTitle] = useState('');
+  const [value, setValue] = useState('');
+  const [type, setType] = useState('');
+  const [category, setCategory] = useState('');
+
+  const history = useHistory();
 
   useEffect(() => {
     async function loadTransactions(): Promise<void> {
@@ -58,7 +74,54 @@ const Dashboard: React.FC = () => {
       setBalance(formattedBalance);
     }
     loadTransactions();
-  }, []);
+  }, [transactions]);
+
+  async function handleAddTransaction(
+    e: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    e.preventDefault();
+
+    if (!title || !value || !type || !category) {
+      setInputError('All the fields are required');
+      return;
+    }
+
+    if (type.toLowerCase() !== 'income' && type !== 'outcome') {
+      setInputError('Type must be income or outcome');
+      return;
+    }
+
+    const data = {
+      title,
+      value,
+      type,
+      category,
+    };
+
+    try {
+      await api.post('transactions', data);
+
+      setInputError('');
+      setTitle('');
+      setValue('');
+      setType('');
+      setCategory('');
+    } catch (err) {
+      setInputError('Invalid transaction');
+    }
+  }
+
+  async function handleDeleteTransaction(id: string): Promise<void> {
+    try {
+      await api.delete(`transactions/${id}`);
+
+      setTransactions(
+        transactions.filter(transaction => transaction.id !== id),
+      );
+    } catch (err) {
+      alert('Error trying to delete incident. Try again.');
+    }
+  }
 
   return (
     <>
@@ -88,6 +151,38 @@ const Dashboard: React.FC = () => {
           </Card>
         </CardContainer>
 
+        <Container>
+          <Form hasError={!!inputError} onSubmit={handleAddTransaction}>
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Title"
+            />
+            <input
+              type="number"
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder="Value"
+            />
+            <input
+              type="text"
+              value={type}
+              onChange={e => setType(e.target.value)}
+              placeholder="Income/Outcome"
+            />
+            <input
+              type="text"
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+              placeholder="Category"
+            />
+
+            <button type="submit">Add</button>
+          </Form>
+          {inputError && <Error>{inputError}</Error>}
+        </Container>
+
         <TableContainer>
           <table>
             <thead>
@@ -109,6 +204,14 @@ const Dashboard: React.FC = () => {
                   </td>
                   <td>{transaction.category.title}</td>
                   <td>{transaction.formattedDate}</td>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTransaction(transaction.id)}
+                    >
+                      <FiTrash2 size={20} color="#a8a8b3" />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
